@@ -1,0 +1,38 @@
+
+services:
+  db:
+    image: mysql:8
+    container_name: fitness_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ai_fitness
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: fitness_app
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/ai_fitness
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: secert_key
+      JWT_EXPIRATION: 86400000
+      GEMINI_API_KEY: gemini_api_key
+      GEMINI_API_URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    depends_on:
+       db:
+         condition: service_healthy
+
+volumes:
+    mysql_data:
