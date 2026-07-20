@@ -48,7 +48,8 @@ public class HealthService {
         return response;
     }
     public HealthInfoResponse findById(Long userId){
-        HealthInfo healthInfo=healthInfoRepository.findById(userId).orElseThrow(()->new RuntimeException("User Not found with this id:"+userId));
+        //findByUserUserId
+        HealthInfo healthInfo=healthInfoRepository.findTopByUserUserIdOrderByRecordedAtDesc(userId).orElseThrow(()->new RuntimeException("User Not found with this id:"+userId));
         HealthInfoResponse response= HealthInfoResponse.builder()
                 .healthId(healthInfo.getHealthId())
                 .activityLevel(healthInfo.getActivityLevel())
